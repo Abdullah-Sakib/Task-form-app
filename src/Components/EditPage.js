@@ -1,23 +1,32 @@
 import React, { useContext, useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { UserContext } from "../Context/Context";
 
-const Home = () => {
+const EditPage = () => {
+  const { user } = useContext(UserContext);
+  const [storedData, setStoredData] = useState({});
   const [sectors, setSectors] = useState([]);
-  const { user, setUser } = useContext(UserContext);
+
+  useEffect(() => {
+    fetch(`http://localhost:5000/getSavedData?name=${user?.name}`)
+      .then((res) => res.json())
+      .then((data) => setStoredData(data));
+  }, [user]);
+
   useEffect(() => {
     fetch("http://localhost:5000/getSectors")
       .then((res) => res.json())
       .then((data) => setSectors(data));
   }, []);
 
-  const handleSave = (event) => {
+  const handleUpdate = (event) => {
     event.preventDefault();
     const form = event.target;
     const name = form.name.value;
     const sector = form.sector.value;
     const agree = form.agree.checked;
+
     if (name.length === 0) {
       toast.error("Please provide your name");
       return;
@@ -35,8 +44,8 @@ const Home = () => {
       agree,
     };
 
-    fetch("http://localhost:5000/saveData", {
-      method: "POST",
+    fetch(`http://localhost:5000/updateData?name=${user?.name}`, {
+      method: "PATCH",
       headers: {
         "content-type": "application/json",
       },
@@ -49,21 +58,22 @@ const Home = () => {
         }
         return res.json();
       })
-      .then(() => {
-        setUser({ name });
-        form.reset();
+      .then((data) => {
+        if (data.modifiedCount > 0 || data.acknowledged) {
+          toast.success("Congratulations! Your data updated successfully");
+        }
       });
   };
-
+  
   return (
     <div>
       <section className="max-w-4xl p-6 mx-auto bg-white rounded-md shadow-xl dark:bg-gray-800">
-        <h2 className="text-2xl font-semibold text-gray-700 capitalize dark:text-white">
-          Please enter your name and pick the Sectors you are currently involved
-          in.
+        <h2 className="text-2xl font-semibold text-gray-700 capitalize dark:text-white ">
+          Update your information. Update your information. Update your
+          information.
         </h2>
 
-        <form className="text-lg" onSubmit={handleSave}>
+        <form className="text-lg" onSubmit={handleUpdate}>
           <div className="grid grid-cols-1 gap-6 mt-4 ">
             <div>
               <label
@@ -76,6 +86,7 @@ const Home = () => {
                 id="name"
                 name="name"
                 type="text"
+                value={storedData?.name}
                 className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-yellow-400 focus:ring-yellow-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
               />
             </div>
@@ -90,9 +101,8 @@ const Home = () => {
               <select
                 id="sectors"
                 name="sector"
-                multiple
-                size={5}
-                className="select select-warning w-full block px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-yellow-400 focus:ring-yellow-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
+                defaultValue={storedData.sector}
+                className="select text-base h-10 select-warning w-full block px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-yellow-400 focus:ring-yellow-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
               >
                 {sectors?.map((sector) => (
                   <option
@@ -110,6 +120,7 @@ const Home = () => {
               <label className="cursor-pointer label justify-start">
                 <input
                   name="agree"
+                  defaultChecked={storedData?.agree}
                   type="checkbox"
                   className="checkbox checkbox-warning border-[3px]"
                 />
@@ -121,20 +132,14 @@ const Home = () => {
           </div>
 
           <div className="flex justify-end mt-6">
-            {user?.name ? (
-              <Link to="/edit">
-                <button className="px-8 py-2.5 leading-5 text-white transition-colors duration-300 transform bg-warning rounded-md hover:bg-yellow-500 focus:outline-none focus:bg-gray-600">
-                  Edit
-                </button>
-              </Link>
-            ) : (
-              <button
-                type="submit"
-                className="px-8 py-2.5 leading-5 text-white transition-colors duration-300 transform bg-warning rounded-md hover:bg-yellow-500 focus:outline-none "
-              >
-                Save
+            <Link to="/">
+              <button className="px-8 py-2.5 leading-5 text-white transition-colors duration-300 transform bg-warning rounded-md hover:bg-yellow-500 focus:outline-none focus:bg-gray-600 mr-3">
+                Back
               </button>
-            )}
+            </Link>
+            <button className="px-8 py-2.5 leading-5 text-white transition-colors duration-300 transform bg-warning rounded-md hover:bg-yellow-500 focus:outline-none ">
+              Update
+            </button>
           </div>
         </form>
       </section>
@@ -142,4 +147,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default EditPage;
