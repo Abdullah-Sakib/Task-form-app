@@ -1,10 +1,10 @@
 import "./App.css";
+import Home from "./Components/Home";
 
 function App() {
   return (
-    <div>
-      <h1>Boom</h1>
-      
+    <div className="min-h-screen flex items-center justify-center">
+      <Home></Home>
     </div>
   );
 }
