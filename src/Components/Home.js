@@ -7,7 +7,7 @@ const Home = () => {
   const [sectors, setSectors] = useState([]);
   const { user, setUser } = useContext(UserContext);
   useEffect(() => {
-    fetch("http://localhost:5000/getSectors")
+    fetch("https://task-form-server.vercel.app/getSectors")
       .then((res) => res.json())
       .then((data) => setSectors(data));
   }, []);
@@ -35,7 +35,7 @@ const Home = () => {
       agree,
     };
 
-    fetch("http://localhost:5000/saveData", {
+    fetch("https://task-form-server.vercel.app/saveData", {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -56,8 +56,8 @@ const Home = () => {
   };
 
   return (
-    <div>
-      <section className="max-w-4xl p-6 mx-auto bg-white rounded-md shadow-xl dark:bg-gray-800">
+    <div className="min-h-screen flex items-center justify-center">
+      <section className="w-full sm:max-w-4xl p-6 bg-white rounded-md shadow-xl dark:bg-gray-800 mx-4">
         <h2 className="text-2xl font-semibold text-gray-700 capitalize dark:text-white">
           Please enter your name and pick the Sectors you are currently involved
           in.

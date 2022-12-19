@@ -8,14 +8,15 @@ const EditPage = () => {
   const [storedData, setStoredData] = useState({});
   const [sectors, setSectors] = useState([]);
 
+
   useEffect(() => {
-    fetch(`http://localhost:5000/getSavedData?name=${user?.name}`)
+    fetch(`https://task-form-server.vercel.app/getSavedData?name=${user?.name}`)
       .then((res) => res.json())
       .then((data) => setStoredData(data));
   }, [user]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/getSectors")
+    fetch("https://task-form-server.vercel.app/getSectors")
       .then((res) => res.json())
       .then((data) => setSectors(data));
   }, []);
@@ -44,7 +45,7 @@ const EditPage = () => {
       agree,
     };
 
-    fetch(`http://localhost:5000/updateData?name=${user?.name}`, {
+    fetch(`https://task-form-server.vercel.app/updateData?name=${user?.name}`, {
       method: "PATCH",
       headers: {
         "content-type": "application/json",
@@ -64,13 +65,12 @@ const EditPage = () => {
         }
       });
   };
-  
+
   return (
-    <div>
-      <section className="max-w-4xl p-6 mx-auto bg-white rounded-md shadow-xl dark:bg-gray-800">
+    <div className="min-h-screen flex items-center justify-center">
+      <section className="w-full sm:max-w-4xl mx-4 p-6  bg-white rounded-md shadow-xl dark:bg-gray-800">
         <h2 className="text-2xl font-semibold text-gray-700 capitalize dark:text-white ">
-          Update your information. Update your information. Update your
-          information.
+          Update your information.
         </h2>
 
         <form className="text-lg" onSubmit={handleUpdate}>
@@ -87,6 +87,7 @@ const EditPage = () => {
                 name="name"
                 type="text"
                 value={storedData?.name}
+                readOnly
                 className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-yellow-400 focus:ring-yellow-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
               />
             </div>
@@ -101,7 +102,8 @@ const EditPage = () => {
               <select
                 id="sectors"
                 name="sector"
-                defaultValue={storedData.sector}
+                multiple
+                size={5}
                 className="select text-base h-10 select-warning w-full block px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-yellow-400 focus:ring-yellow-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
               >
                 {sectors?.map((sector) => (
